@@ -1,7 +1,7 @@
-package com.liuhao.rpc.client;
+package com.liuhao.rpc;
 
 import com.liuhao.rpc.entity.RpcRequest;
-import com.liuhao.rpc.entity.RpcResponse;
+import com.liuhao.rpc.socket.client.SocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +16,10 @@ public class RpcClientProxy implements InvocationHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
 
-    private String host;
-    private int port;
+    private final RpcClient client;
 
-    public RpcClientProxy(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public RpcClientProxy(RpcClient client) {
+        this.client = client;
     }
 
     public <T> T getProxy(Class<T> clazz) {
@@ -38,7 +36,6 @@ public class RpcClientProxy implements InvocationHandler {
                 .paramTypes(method.getParameterTypes())
                 .build();
         // 远程调用的客户端
-        RpcClient rpcClient = new RpcClient();
-        return rpcClient.sendRequest(rpcRequest, host, port);
+        return client.sendRequest(rpcRequest);
     }
 }

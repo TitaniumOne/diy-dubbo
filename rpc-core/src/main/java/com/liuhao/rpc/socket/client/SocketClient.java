@@ -1,5 +1,6 @@
-package com.liuhao.rpc.client;
+package com.liuhao.rpc.socket.client;
 
+import com.liuhao.rpc.RpcClient;
 import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.entity.RpcResponse;
 import com.liuhao.rpc.enumeration.ResponseCode;
@@ -13,11 +14,18 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class RpcClient {
+public class SocketClient implements RpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
+    private final String host;
+    private final int port;
 
-    public Object sendRequest(RpcRequest rpcRequest, String host, int port) {
+    public SocketClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    public Object sendRequest(RpcRequest rpcRequest) {
         /**
          * 采用Socket实现
          * try()中一般放对资源的申请，若{}出现异常，()资源会自动关闭

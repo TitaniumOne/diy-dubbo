@@ -1,8 +1,9 @@
-package com.liuhao.rpc.server;
+package com.liuhao.rpc.socket.server;
 
 import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.entity.RpcResponse;
 import com.liuhao.rpc.register.ServiceRegistry;
+import com.liuhao.rpc.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * IO传输模式 | 处理客户端RpcRequest的工作线程
+ */
 public class RequestHandlerThread implements Runnable {
 
 

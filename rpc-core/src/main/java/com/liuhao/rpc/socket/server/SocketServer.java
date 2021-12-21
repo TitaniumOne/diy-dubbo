@@ -1,6 +1,7 @@
-package com.liuhao.rpc.server;
+package com.liuhao.rpc.socket.server;
 
 import com.liuhao.rpc.register.ServiceRegistry;
+import com.liuhao.rpc.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,9 +14,9 @@ import java.util.concurrent.*;
  * 利用线程池创建线程，对多线程情况进行处理
  * 不再负责注册服务，只负责启动
  */
-public class RpcServer {
+public class SocketServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 50;
@@ -25,7 +26,7 @@ public class RpcServer {
     private RequestHandler requestHandler = new RequestHandler();
     private final ServiceRegistry serviceRegistry;
 
-    public RpcServer(ServiceRegistry serviceRegistry) {
+    public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         /**
          * 设置上线为100个线程的阻塞队列

@@ -1,4 +1,4 @@
-package com.liuhao.rpc.server;
+package com.liuhao.rpc;
 
 import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.entity.RpcResponse;
