@@ -1,7 +1,5 @@
 package com.liuhao.rpc.serializer;
 
-import sun.java2d.opengl.OGLContext;
-
 public interface CommonSerializer {
     byte[] serialize(Object obj);
     Object deserialize(byte[] bytes, Class<?> clazz);
@@ -9,6 +7,8 @@ public interface CommonSerializer {
 
     static CommonSerializer getByCode(int code) {
         switch (code) {
+            case 0:
+                return new KryoSerializer();
             case 1:
                 return new JsonSerializer();
             default:

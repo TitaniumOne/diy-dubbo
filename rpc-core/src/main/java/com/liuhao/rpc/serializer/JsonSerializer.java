@@ -23,7 +23,7 @@ public class JsonSerializer implements CommonSerializer {
 
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSerializer.class);
-
+    // ObjectMapper支持线程安全
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
