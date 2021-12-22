@@ -19,6 +19,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
     private static ServiceRegistry serviceRegistry;
 
     static{
+        // 在之前注册的时候，是静态实例，相当于单例
         requestHandler = new RequestHandler();
         serviceRegistry = new DefaultServiceRegistry();
     }
