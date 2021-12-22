@@ -2,6 +2,7 @@ package com.liuhao.rpc.entity;
 
 import com.liuhao.rpc.enumeration.ResponseCode;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
  * 如果调用失败了，就需要失败的信息，这里封装一个RpcResponse对象作为返回
  */
 @Data
+@NoArgsConstructor
 public class RpcResponse<T> implements Serializable {
     /**
      * 状态响应码
@@ -37,11 +39,10 @@ public class RpcResponse<T> implements Serializable {
         return response;
     }
 
-    public static <T> RpcResponse<T> fail(T data) {
+    public static <T> RpcResponse<T> fail(ResponseCode code){
         RpcResponse<T> response = new RpcResponse<>();
-        response.setStatusCode(ResponseCode.FAIL.getCode());
-        response.setData(data);
+        response.setStatusCode(code.getCode());
+        response.setMessage(code.getMessage());
         return response;
-
     }
 }

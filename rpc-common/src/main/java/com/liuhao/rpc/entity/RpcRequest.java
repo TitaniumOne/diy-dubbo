@@ -1,7 +1,9 @@
 package com.liuhao.rpc.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,7 +15,8 @@ import java.io.Serializable;
  * 把这四个条件写到一个对象里，到时候传输时传输这个对象就行了。即RpcRequest对象
  */
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RpcRequest implements Serializable {
     /**
      * 待调用接口名称
