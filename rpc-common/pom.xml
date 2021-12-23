@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.liuhao</groupId>
         <artifactId>diy-dubbo</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>rpc-common</artifactId>
