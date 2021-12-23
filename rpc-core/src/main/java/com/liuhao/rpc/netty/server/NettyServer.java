@@ -3,6 +3,10 @@ package com.liuhao.rpc.netty.server;
 import com.liuhao.rpc.RpcServer;
 import com.liuhao.rpc.codec.CommonDecoder;
 import com.liuhao.rpc.codec.CommonEncoder;
+import com.liuhao.rpc.enumeration.RpcError;
+import com.liuhao.rpc.exception.RpcException;
+import com.liuhao.rpc.serializer.CommonSerializer;
+import com.liuhao.rpc.serializer.HessianSerializer;
 import com.liuhao.rpc.serializer.JsonSerializer;
 import com.liuhao.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
@@ -21,9 +25,15 @@ import org.slf4j.LoggerFactory;
 public class NettyServer implements RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
+    private CommonSerializer serializer;
 
     @Override
     public void start(int port) {
+        if(serializer == null) {
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
+
         // main reactor：可以理解为专门用于处理客户端连接的主线程池
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         // sub reactor：可以理解为专门用于处理IO事件的子线程池
@@ -50,7 +60,7 @@ public class NettyServer implements RpcServer {
                             ChannelPipeline p = ch.pipeline();
                             // 往管道中添加Handler，注意入站Handler与出站Handler都必须按实际执行顺序添加，比如先解码再Server处理，那Decoder()就要放在前面。
                             // 但入站和出站Handler之间则互不影响，这里我就是先添加的出站Handler再添加的入站
-                            p.addLast(new CommonEncoder(new KryoSerializer()))
+                            p.addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
                         }
@@ -66,5 +76,10 @@ public class NettyServer implements RpcServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 }

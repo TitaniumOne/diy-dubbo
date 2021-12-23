@@ -32,7 +32,6 @@ public class KryoSerializer implements CommonSerializer {
         return kryo;
     });
 
-
     @Override
     public byte[] serialize(Object obj) {
         try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
