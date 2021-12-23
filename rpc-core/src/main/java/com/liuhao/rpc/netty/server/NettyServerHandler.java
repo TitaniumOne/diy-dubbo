@@ -7,7 +7,6 @@ import com.liuhao.rpc.register.DefaultServiceRegistry;
 import com.liuhao.rpc.register.ServiceRegistry;
 import io.netty.channel.*;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.EventExecutorGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +29,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
             logger.info("服务端接受请求：{}", msg);
             String interfaceName = msg.getInterfaceName();
             Object service = serviceRegistry.getService(interfaceName);
-            Object result = requestHandler.handle(msg, service);
-            ChannelFuture future = ctx.writeAndFlush(RpcResponse.success(result));
+            Object response = requestHandler.handle(msg, service);
+            ChannelFuture future = ctx.writeAndFlush(response);
 //            ChannelFuture future = ctx.writeAndFlush(result);
             // 添加一个监听器到channelFuture来检测是否所有的数据包都发出，然后关闭通道
             future.addListener(ChannelFutureListener.CLOSE);

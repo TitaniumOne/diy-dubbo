@@ -9,6 +9,7 @@ import com.liuhao.rpc.exception.RpcException;
 import com.liuhao.rpc.serializer.CommonSerializer;
 import com.liuhao.rpc.socket.util.ObjectReader;
 import com.liuhao.rpc.socket.util.ObjectWriter;
+import com.liuhao.rpc.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +43,7 @@ public class SocketClient implements RpcClient {
             InputStream inputStream = socket.getInputStream();
             ObjectWriter.writeObject(outputStream, rpcRequest, serializer);
             RpcResponse rpcResponse = (RpcResponse) ObjectReader.readObject(inputStream);
-            if(rpcResponse == null){
-                logger.error("服务调用失败，service:{}" + rpcRequest.getInterfaceName());
-                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service:" + rpcRequest.getInterfaceName());
-            }
-            if(rpcResponse.getStatusCode() == null || rpcResponse.getStatusCode() != ResponseCode.SUCCESS.getCode()){
-                logger.error("服务调用失败，service:{} response:{}", rpcRequest.getInterfaceName(), rpcResponse);
-                throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE, "service:" + rpcRequest.getInterfaceName());
-            }
+            RpcMessageChecker.check(rpcRequest, rpcResponse);
             return rpcResponse.getData();
 
         } catch (IOException e) {
