@@ -5,6 +5,7 @@ import com.liuhao.rpc.netty.server.NettyServer;
 import com.liuhao.rpc.register.DefaultServiceRegistry;
 import com.liuhao.rpc.register.ServiceRegistry;
 import com.liuhao.rpc.serializer.KryoSerializer;
+import com.liuhao.rpc.serializer.ProtostuffSerializer;
 
 public class NettyTestServer {
     public static void main(String[] args) {
@@ -12,7 +13,7 @@ public class NettyTestServer {
         ServiceRegistry registry = new DefaultServiceRegistry();
         registry.register(helloService);
         NettyServer server = new NettyServer();
-        server.setSerializer(new KryoSerializer());
+        server.setSerializer(new ProtostuffSerializer());
         server.start(9999);
     }
 }

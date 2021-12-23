@@ -6,6 +6,7 @@ import com.liuhao.rpc.exception.RpcException;
 import com.liuhao.rpc.register.ServiceRegistry;
 import com.liuhao.rpc.RequestHandler;
 import com.liuhao.rpc.serializer.CommonSerializer;
+import com.liuhao.rpc.util.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,15 +34,8 @@ public class SocketServer implements RpcServer{
 
     public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
-        /**
-         * 设置上线为100个线程的阻塞队列
-         */
-        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-        ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        /**
-         * 创建线程池实例
-         */
-        threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, workingQueue, threadFactory);
+        // 创建线程池
+        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
     }
 
     public void start(int port) {
