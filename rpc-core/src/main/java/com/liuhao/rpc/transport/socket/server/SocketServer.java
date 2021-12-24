@@ -20,6 +20,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
 
+import static com.liuhao.rpc.transport.RpcClient.DEFAULT_SERIALIZER;
+
 /**
  * 利用线程池创建线程，对多线程情况进行处理
  * 不再负责注册服务，只负责启动
@@ -38,10 +40,15 @@ public class SocketServer implements RpcServer{
     private final ServiceProvider serviceProvider;
 
     public SocketServer(String host, int port) {
+        this(host, port, DEFAULT_SERIALIZER);
+    }
+
+    public SocketServer(String host, int port, Integer serializerCode){
         this.host = host;
         this.port = port;
         serviceRegistry = new NacosServiceRegistry();
         serviceProvider = new ServiceProviderImpl();
+        serializer = CommonSerializer.getByCode(serializerCode);
         //创建线程池
         threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
     }
@@ -73,10 +80,4 @@ public class SocketServer implements RpcServer{
             logger.info("连接时有错误发生：" + e);
         }
     }
-
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
-    }
-
 }

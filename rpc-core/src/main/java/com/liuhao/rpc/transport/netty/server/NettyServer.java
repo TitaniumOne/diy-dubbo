@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 
+import static com.liuhao.rpc.transport.RpcClient.DEFAULT_SERIALIZER;
+
 public class NettyServer implements RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
@@ -37,12 +39,17 @@ public class NettyServer implements RpcServer {
     private final ServiceProvider serviceProvider;
 
     private CommonSerializer serializer;
-
     public NettyServer(String host, int port) {
+        this(host, port, DEFAULT_SERIALIZER);
+    }
+
+
+    public NettyServer(String host, int port, Integer serializerCode) {
         this.host = host;
         this.port = port;
         serviceRegistry = new NacosServiceRegistry();
         serviceProvider = new ServiceProviderImpl();
+        serializer = CommonSerializer.getByCode(serializerCode);
     }
 
     @Override
@@ -102,10 +109,5 @@ public class NettyServer implements RpcServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-    }
-
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
     }
 }
