@@ -1,5 +1,6 @@
 package com.liuhao.rpc.transport.socket.server;
 
+import com.liuhao.rpc.hook.ShutdownHook;
 import com.liuhao.rpc.transport.RpcServer;
 import com.liuhao.rpc.enumeration.RpcError;
 import com.liuhao.rpc.exception.RpcException;
@@ -57,17 +58,16 @@ public class SocketServer implements RpcServer{
     }
 
     public void start() {
-        if (serializer == null){
-            logger.error("未设置序列化器");
-            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
-        }
-        try(ServerSocket serverSocket = new ServerSocket(port)) {
+        try(ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.bind(new InetSocketAddress(host, port));
             logger.info("服务器正在启动");
+            //添加钩子，服务端关闭时会注销服务
+            ShutdownHook.getShutdownHook().addClearAllHook();
             Socket socket;
             // 没有接收到连接请求时，accept会一直阻塞
             while((socket = serverSocket.accept()) != null) {
                 logger.info("客户端已经连接:{}:{}" + socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serializer));
+                threadPool.execute(new SocketRequestHandlerThread(socket, requestHandler, serializer));
             }
         } catch (IOException e) {
             logger.info("连接时有错误发生：" + e);
