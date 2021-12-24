@@ -1,14 +1,15 @@
-package com.liuhao.rpc.netty.server;
+package com.liuhao.rpc.transport.netty.server;
 
-import com.liuhao.rpc.RpcServer;
+import com.liuhao.rpc.transport.RpcServer;
 import com.liuhao.rpc.codec.CommonDecoder;
 import com.liuhao.rpc.codec.CommonEncoder;
 import com.liuhao.rpc.enumeration.RpcError;
 import com.liuhao.rpc.exception.RpcException;
+import com.liuhao.rpc.provider.ServiceProvider;
+import com.liuhao.rpc.provider.ServiceProviderImpl;
+import com.liuhao.rpc.register.NacosServiceRegistry;
+import com.liuhao.rpc.register.ServiceRegistry;
 import com.liuhao.rpc.serializer.CommonSerializer;
-import com.liuhao.rpc.serializer.HessianSerializer;
-import com.liuhao.rpc.serializer.JsonSerializer;
-import com.liuhao.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -22,18 +23,40 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 public class NettyServer implements RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
+
+    private final String host;
+    private final int port;
+
+    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
+
     private CommonSerializer serializer;
 
+    public NettyServer(String host, int port) {
+        this.host = host;
+        this.port = port;
+        serviceRegistry = new NacosServiceRegistry();
+        serviceProvider = new ServiceProviderImpl();
+    }
+
     @Override
-    public void start(int port) {
+    public <T> void publishService(Object service, Class<T> serviceClass) {
         if(serializer == null) {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
+        serviceProvider.addServiceProvider(service);
+        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        start();
+    }
 
+    @Override
+    public void start() {
         // main reactor：可以理解为专门用于处理客户端连接的主线程池
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         // sub reactor：可以理解为专门用于处理IO事件的子线程池
@@ -66,7 +89,7 @@ public class NettyServer implements RpcServer {
                         }
                     });
             // 绑定端口，启动Netty，sync()代表阻塞主Server线程，以执行Netty线程，如果不阻塞Netty就直接被下面shutdown了
-            ChannelFuture future = serverBootstrap.bind(port).sync();
+            ChannelFuture future = serverBootstrap.bind(host, port).sync();
             // 等确定通道关闭了，关闭future回到主Server线程
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {

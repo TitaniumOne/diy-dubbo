@@ -1,4 +1,4 @@
-package com.liuhao.rpc.register;
+package com.liuhao.rpc.provider;
 
 import com.liuhao.rpc.enumeration.RpcError;
 import com.liuhao.rpc.exception.RpcException;
@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 默认的服务注册表
  */
-public class DefaultServiceRegistry implements ServiceRegistry {
+public class ServiceProviderImpl implements ServiceProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     /**
      * key：服务名称，即接口名
@@ -29,7 +29,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public synchronized <T> void register(T service) {
+    public synchronized <T> void addServiceProvider(T service) {
         String serviceImplName = service.getClass().getCanonicalName();
         if(registeredService.contains(serviceImplName)) {
             return;
@@ -47,7 +47,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public synchronized Object getService(String serviceName) {
+    public synchronized Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if(service == null) {
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);

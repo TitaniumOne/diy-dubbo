@@ -1,13 +1,13 @@
-import com.liuhao.rpc.RpcClient;
+import com.liuhao.rpc.transport.RpcClient;
 import com.liuhao.rpc.api.HelloObject;
 import com.liuhao.rpc.api.HelloService;
-import com.liuhao.rpc.RpcClientProxy;
+import com.liuhao.rpc.transport.RpcClientProxy;
 import com.liuhao.rpc.serializer.KryoSerializer;
-import com.liuhao.rpc.socket.client.SocketClient;
+import com.liuhao.rpc.transport.socket.client.SocketClient;
 
 public class SocketTestClient {
     public static void main(String[] args) {
-        RpcClient client = new SocketClient("127.0.0.1", 9000);
+        RpcClient client = new SocketClient();
         client.setSerializer(new KryoSerializer());
         // 接口与代理对象之间的中介对象
         RpcClientProxy proxy = new RpcClientProxy(client);

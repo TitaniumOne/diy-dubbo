@@ -1,22 +1,15 @@
-package com.liuhao.rpc.netty.client;
+package com.liuhao.rpc.transport.netty.client;
 
-import com.liuhao.rpc.RpcClient;
-import com.liuhao.rpc.codec.CommonDecoder;
-import com.liuhao.rpc.codec.CommonEncoder;
+import com.liuhao.rpc.register.NacosServiceRegistry;
+import com.liuhao.rpc.register.ServiceRegistry;
+import com.liuhao.rpc.transport.RpcClient;
 import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.entity.RpcResponse;
 import com.liuhao.rpc.enumeration.RpcError;
 import com.liuhao.rpc.exception.RpcException;
 import com.liuhao.rpc.serializer.CommonSerializer;
-import com.liuhao.rpc.serializer.HessianSerializer;
-import com.liuhao.rpc.serializer.JsonSerializer;
-import com.liuhao.rpc.serializer.KryoSerializer;
 import com.liuhao.rpc.util.RpcMessageChecker;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,26 +20,29 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NettyClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
-
+    private final ServiceRegistry serviceRegistry;
     private CommonSerializer serializer;
 
     private String host;
     private int port;
 
-    public NettyClient(String host, int port){
-        this.host = host;
-        this.port = port;
+    public NettyClient(){
+        serviceRegistry = new NacosServiceRegistry();
     }
 
     @Override
     public Object sendRequest(RpcRequest rpcRequest) {
         if(serializer == null) {
+            logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
         // 保证自定义实体类变量的原子性和共享性的线程安全，此处应用于rpcResponse
         AtomicReference<Object> result = new AtomicReference<>(null);
         try {
-            Channel channel = ChannelProvider.get(new InetSocketAddress(host, port), serializer);
+            // 从Nacos获取提供对应服务的服务端地址
+            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            // 创建Netty通道
+            Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
             if(channel.isActive()) {
                 // 向服务端发送请求，并且设置监听
                 channel.writeAndFlush(rpcRequest).addListener(future1 -> {

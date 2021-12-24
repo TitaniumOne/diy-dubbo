@@ -1,15 +1,13 @@
-import com.liuhao.rpc.RpcClient;
-import com.liuhao.rpc.RpcClientProxy;
+import com.liuhao.rpc.transport.RpcClient;
+import com.liuhao.rpc.transport.RpcClientProxy;
 import com.liuhao.rpc.api.HelloObject;
 import com.liuhao.rpc.api.HelloService;
-import com.liuhao.rpc.netty.client.NettyClient;
-import com.liuhao.rpc.serializer.HessianSerializer;
-import com.liuhao.rpc.serializer.KryoSerializer;
+import com.liuhao.rpc.transport.netty.client.NettyClient;
 import com.liuhao.rpc.serializer.ProtostuffSerializer;
 
 public class NettyTestClient {
     public static void main(String[] args) {
-        RpcClient client = new NettyClient("127.0.0.1", 9999);
+        RpcClient client = new NettyClient();
         client.setSerializer(new ProtostuffSerializer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);

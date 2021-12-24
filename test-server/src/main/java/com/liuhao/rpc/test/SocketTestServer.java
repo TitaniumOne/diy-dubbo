@@ -1,17 +1,15 @@
 package com.liuhao.rpc.test;
 
-import com.liuhao.rpc.register.DefaultServiceRegistry;
+import com.liuhao.rpc.provider.ServiceProviderImpl;
 import com.liuhao.rpc.serializer.KryoSerializer;
-import com.liuhao.rpc.socket.server.SocketServer;
+import com.liuhao.rpc.transport.socket.server.SocketServer;
 import com.liuhao.rpc.api.HelloService;
 
 public class SocketTestServer {
     public static void main(String[] args) {
-        HelloService helloService = new HelloServiceImpl();
-        DefaultServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-        serviceRegistry.register(helloService);
-        SocketServer socketServer = new SocketServer(serviceRegistry);
+        HelloService helloService = new HelloServiceImpl2();
+        SocketServer socketServer = new SocketServer("127.0.0.1", 9998);
         socketServer.setSerializer(new KryoSerializer());
-        socketServer.start(9000);
+        socketServer.publishService(helloService, HelloService.class);
     }
 }

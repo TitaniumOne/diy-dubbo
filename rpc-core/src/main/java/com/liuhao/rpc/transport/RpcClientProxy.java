@@ -1,7 +1,6 @@
-package com.liuhao.rpc;
+package com.liuhao.rpc.transport;
 
 import com.liuhao.rpc.entity.RpcRequest;
-import com.liuhao.rpc.socket.client.SocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.liuhao.rpc;
+package com.liuhao.rpc.transport;
 
 import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.serializer.CommonSerializer;

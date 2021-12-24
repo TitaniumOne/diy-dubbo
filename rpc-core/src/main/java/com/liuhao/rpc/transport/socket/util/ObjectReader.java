@@ -1,4 +1,4 @@
-package com.liuhao.rpc.socket.util;
+package com.liuhao.rpc.transport.socket.util;
 
 import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.entity.RpcResponse;

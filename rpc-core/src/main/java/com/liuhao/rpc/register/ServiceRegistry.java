@@ -1,20 +1,19 @@
 package com.liuhao.rpc.register;
 
-/**
- * 服务注册表的通用接口
- */
+import java.net.InetSocketAddress;
+
 public interface ServiceRegistry {
     /**
-     * 将一个服务注册进注册表
-     * @param service
-     * @param <T>
+     * 将一个服务注册到注册表
+     * @param serviceName 服务名称
+     * @param inetSocketAddress 服务提供者的地址
      */
-    <T> void register(T service);
+    void register(String serviceName, InetSocketAddress inetSocketAddress);
 
     /**
-     * 根据服务名获取服务实体
-     * @param serviceName 即接口名
-     * @return
+     * 根据服务名字查找服务实体
+     * @param serviceName
+     * @return 服务实体
      */
-    Object getService(String serviceName);
+    InetSocketAddress lookupService(String serviceName);
 }
