@@ -1,6 +1,8 @@
 package com.liuhao.rpc.transport.socket.client;
 
+import com.liuhao.rpc.register.NacosServiceDiscovery;
 import com.liuhao.rpc.register.NacosServiceRegistry;
+import com.liuhao.rpc.register.ServiceDiscovery;
 import com.liuhao.rpc.register.ServiceRegistry;
 import com.liuhao.rpc.transport.RpcClient;
 import com.liuhao.rpc.entity.RpcRequest;
@@ -21,13 +23,11 @@ import java.net.Socket;
 public class SocketClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
-
-    private final ServiceRegistry serviceRegistry;
-
+    private final ServiceDiscovery serviceDiscovery;
     private CommonSerializer serializer;
 
     public SocketClient() {
-        serviceRegistry = new NacosServiceRegistry();
+        serviceDiscovery = new NacosServiceDiscovery();
     }
 
     public Object sendRequest(RpcRequest rpcRequest) {
@@ -36,7 +36,7 @@ public class SocketClient implements RpcClient {
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
         // 从Nacos获取提供对应服务的服务端地址
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
 
         /**
          * 采用Socket实现

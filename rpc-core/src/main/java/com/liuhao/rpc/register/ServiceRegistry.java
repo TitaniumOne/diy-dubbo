@@ -2,6 +2,9 @@ package com.liuhao.rpc.register;
 
 import java.net.InetSocketAddress;
 
+/**
+ * 服务注册接口
+ */
 public interface ServiceRegistry {
     /**
      * 将一个服务注册到注册表
@@ -9,11 +12,4 @@ public interface ServiceRegistry {
      * @param inetSocketAddress 服务提供者的地址
      */
     void register(String serviceName, InetSocketAddress inetSocketAddress);
-
-    /**
-     * 根据服务名字查找服务实体
-     * @param serviceName
-     * @return 服务实体
-     */
-    InetSocketAddress lookupService(String serviceName);
 }
