@@ -1,6 +1,8 @@
 package com.liuhao.rpc.transport.netty.client;
 
 import com.liuhao.rpc.factory.SingletonFactory;
+import com.liuhao.rpc.loadbalancer.LoadBalancer;
+import com.liuhao.rpc.loadbalancer.RandomLoadBalancer;
 import com.liuhao.rpc.register.NacosServiceDiscovery;
 import com.liuhao.rpc.register.NacosServiceRegistry;
 import com.liuhao.rpc.register.ServiceDiscovery;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -43,11 +46,16 @@ public class NettyClient implements RpcClient {
 
     public NettyClient() {
         // 以默认序列化器调用构造函数
-        this(DEFAULT_SERIALIZER);
+        this(DEFAULT_SERIALIZER, new RandomLoadBalancer());
     }
 
-    public NettyClient(Integer serializerCode){
-        serviceDiscovery = new NacosServiceDiscovery();
+    public NettyClient(Integer serializerCode) {
+        // 以默认序列化器调用构造函数
+        this(serializerCode, new RandomLoadBalancer());
+    }
+
+    public NettyClient(Integer serializerCode, LoadBalancer loadBalancer){
+        serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         serializer = CommonSerializer.getByCode(serializerCode);
         unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }

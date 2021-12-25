@@ -1,5 +1,7 @@
 package com.liuhao.rpc.transport.socket.client;
 
+import com.liuhao.rpc.loadbalancer.LoadBalancer;
+import com.liuhao.rpc.loadbalancer.RandomLoadBalancer;
 import com.liuhao.rpc.register.NacosServiceDiscovery;
 import com.liuhao.rpc.register.NacosServiceRegistry;
 import com.liuhao.rpc.register.ServiceDiscovery;
@@ -27,11 +29,19 @@ public class SocketClient implements RpcClient {
     private CommonSerializer serializer;
 
     public SocketClient() {
-        this(DEFAULT_SERIALIZER);
+        this(DEFAULT_SERIALIZER, new RandomLoadBalancer());
     }
 
-    public SocketClient(Integer serializerCode) {
-        serviceDiscovery = new NacosServiceDiscovery();
+    public SocketClient(LoadBalancer loadBalancer) {
+        this(DEFAULT_SERIALIZER, loadBalancer);
+    }
+
+    public SocketClient(Integer serializerCode){
+        this(serializerCode, new RandomLoadBalancer());
+    }
+
+    public SocketClient(Integer serializerCode, LoadBalancer loadBalancer) {
+        serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         serializer = CommonSerializer.getByCode(serializerCode);
     }
 

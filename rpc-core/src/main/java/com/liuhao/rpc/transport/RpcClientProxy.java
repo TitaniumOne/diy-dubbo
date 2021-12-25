@@ -4,6 +4,7 @@ import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.entity.RpcResponse;
 import com.liuhao.rpc.transport.netty.client.NettyClient;
 import com.liuhao.rpc.transport.socket.client.SocketClient;
+import com.liuhao.rpc.util.RpcMessageChecker;
 import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,21 +39,21 @@ public class RpcClientProxy implements InvocationHandler {
         logger.info("调用方法{}#{}", method.getDeclaringClass().getName(), method.getName());
         RpcRequest rpcRequest = new RpcRequest(UUID.randomUUID().toString(), method.getDeclaringClass().getName(),
                 method.getName(), args, method.getParameterTypes(), false);
-        Object result = null;
+        RpcResponse rpcResponse = null;
         if(client instanceof NettyClient) {
             // 异步获取调用结果
             CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>)client.sendRequest(rpcRequest);
             try {
-                result = completableFuture.get().getData();
+                rpcResponse = completableFuture.get();
             } catch (ExecutionException | InterruptedException e) {
                 logger.error("方法调用请求发送失败", e);
                 return null;
             }
         }
         if(client instanceof SocketClient) {
-            RpcResponse rpcResponse = (RpcResponse) client.sendRequest(rpcRequest);
-            result = rpcResponse.getData();
+            rpcResponse = (RpcResponse) client.sendRequest(rpcRequest);
         }
-        return result;
+        RpcMessageChecker.check(rpcRequest, rpcResponse);
+        return rpcResponse.getData();
     }
 }

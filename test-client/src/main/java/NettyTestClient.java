@@ -11,7 +11,9 @@ public class NettyTestClient {
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "this is netty test!!!");
-        String res = helloService.hello(object);
-        System.out.println(res);
+        for(int i = 0; i < 20; i++) {
+            String res = helloService.hello(object);
+            System.out.println(res);
+        }
     }
 }
