@@ -1,6 +1,7 @@
 package com.liuhao.rpc.transport.socket.server;
 
 import com.liuhao.rpc.hook.ShutdownHook;
+import com.liuhao.rpc.transport.AbstractRpcServer;
 import com.liuhao.rpc.transport.RpcServer;
 import com.liuhao.rpc.enumeration.RpcError;
 import com.liuhao.rpc.exception.RpcException;
@@ -24,18 +25,13 @@ import java.util.concurrent.*;
  * 利用线程池创建线程，对多线程情况进行处理
  * 不再负责注册服务，只负责启动
  */
-public class SocketServer implements RpcServer{
+public class SocketServer extends AbstractRpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
     private final ExecutorService threadPool;
-    private final String host;
-    private final int port;
     private CommonSerializer serializer;
     private RequestHandler requestHandler = new RequestHandler();
-
-    private final ServiceRegistry serviceRegistry;
-    private final ServiceProvider serviceProvider;
 
     public SocketServer(String host, int port) {
         this(host, port, DEFAULT_SERIALIZER);
@@ -49,17 +45,8 @@ public class SocketServer implements RpcServer{
         serializer = CommonSerializer.getByCode(serializerCode);
         //创建线程池
         threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
-    }
-
-    @Override
-    public <T> void publishService(T service, Class<T> serviceClass) {
-        if(serializer == null) {
-            logger.error("未设置序列化器");
-            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
-        }
-        serviceProvider.addServiceProvider(service, serviceClass);
-        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        start();
+        //自动注册服务
+        scanServices();
     }
 
     public void start() {

@@ -3,6 +3,8 @@ package com.liuhao.rpc.register;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.liuhao.rpc.enumeration.RpcError;
+import com.liuhao.rpc.exception.RpcException;
 import com.liuhao.rpc.loadbalancer.LoadBalancer;
 import com.liuhao.rpc.loadbalancer.RandomLoadBalancer;
 import com.liuhao.rpc.util.NacosUtil;
@@ -39,7 +41,11 @@ public class NacosServiceDiscovery implements ServiceDiscovery {
         try {
             // 利用列表获取某个服务的所有提供者
             List<Instance> instances = NacosUtil.getAllInstance(serviceName);
-            // 取第一个提供者[后续可改]
+            if (instances.size() == 0) {
+                logger.error("找不到对应的服务：" + serviceName);
+                throw new RpcException(RpcError.SERVICE_NOT_FOUND);
+            }
+            // 负载均衡
             Instance instance = loadBalancer.select(instances);
             return new InetSocketAddress(instance.getIp(), instance.getPort());
         } catch (NacosException e) {

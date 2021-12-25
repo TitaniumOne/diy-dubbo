@@ -2,7 +2,7 @@ package com.liuhao.rpc.test.socket;
 
 import com.liuhao.rpc.api.HelloObject;
 import com.liuhao.rpc.api.HelloService;
-import com.liuhao.rpc.test.netty.HelloServiceImpl;
+import com.liuhao.rpc.test.netty1.HelloServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

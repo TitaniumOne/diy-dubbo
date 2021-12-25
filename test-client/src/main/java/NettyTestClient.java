@@ -1,3 +1,4 @@
+import com.liuhao.rpc.loadbalancer.RoundRobinLoadBalancer;
 import com.liuhao.rpc.serializer.CommonSerializer;
 import com.liuhao.rpc.transport.RpcClient;
 import com.liuhao.rpc.transport.RpcClientProxy;
@@ -7,7 +8,7 @@ import com.liuhao.rpc.transport.netty.client.NettyClient;
 
 public class NettyTestClient {
     public static void main(String[] args) {
-        RpcClient client = new NettyClient(CommonSerializer.PROTOBUF_SERIALIZER);
+        RpcClient client = new NettyClient(CommonSerializer.PROTOBUF_SERIALIZER, new RoundRobinLoadBalancer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "this is netty test!!!");
