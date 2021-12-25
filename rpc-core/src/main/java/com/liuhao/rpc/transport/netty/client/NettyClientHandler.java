@@ -2,6 +2,7 @@ package com.liuhao.rpc.transport.netty.client;
 
 import com.liuhao.rpc.entity.RpcRequest;
 import com.liuhao.rpc.entity.RpcResponse;
+import com.liuhao.rpc.factory.SingletonFactory;
 import com.liuhao.rpc.serializer.CommonSerializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -20,6 +21,11 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
 
+    private final UnprocessedRequests unprocessedRequests;
+
+    public NettyClientHandler(){
+        unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+    }
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
@@ -41,10 +47,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
         try {
             logger.info(String.format("客户端接收到消息：%s", msg));
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + msg.getRequestId());
-            ctx.channel().attr(key).set(msg);
-            // 关闭客户端通道
-            ctx.channel().close();
+            //将响应数据取出
+            unprocessedRequests.complete(msg);
         } finally {
             ReferenceCountUtil.release(msg);
         }
