@@ -1,18 +1,14 @@
 package com.liuhao.rpc.hook;
 
 import com.liuhao.rpc.util.NacosUtil;
-import com.liuhao.rpc.util.ThreadPoolFactory;
-import org.omg.SendingContext.RunTime;
+import com.liuhao.rpc.factory.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
 
 public class ShutdownHook {
 
     private static final Logger logger = LoggerFactory.getLogger(ShutdownHook.class);
-
-    private final ExecutorService threadPool = ThreadPoolFactory.createDefaultThreadPool("shutdown-hook");
 
     /**
      * 单例模式创建钩子，保证全局只有这一个钩子

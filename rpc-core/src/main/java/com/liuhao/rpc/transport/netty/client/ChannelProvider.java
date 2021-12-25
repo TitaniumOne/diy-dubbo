@@ -10,11 +10,15 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +30,11 @@ public class ChannelProvider {
     private static final Logger logger = LoggerFactory.getLogger(ChannelProvider.class);
     private static EventLoopGroup eventLoopGroup;
     private static Bootstrap bootstrap = initializeBootStrap();
+
+//    /**
+//     * 所有客户端Channel都保存在Map中
+//     */
+//    private static Map<String, Channel> channels = new ConcurrentHashMap<>();
 
     private static final int MAX_RETRY_COUNT = 5;
     private static Channel channel = null;
@@ -39,7 +48,7 @@ public class ChannelProvider {
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 // 启动该功能时，TCP会主动探测空闲连接的有效性。可以将此功能视为TCP的心跳机制，默认心跳间隔7200s，即2小时
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                //配置Channel参数，nodelay没有延迟，true就代表禁用Nagle算法，减小传输延迟。
+                // 配置Channel参数，nodelay没有延迟，true就代表禁用Nagle算法，减小传输延迟。
                 .option(ChannelOption.TCP_NODELAY, true);
         return bootstrap;
     }
@@ -50,6 +59,9 @@ public class ChannelProvider {
             @Override
             protected void initChannel(SocketChannel ch) {
                 ch.pipeline().addLast(new CommonEncoder(serializer))
+                        // 设定IdleStateHandler心跳检测，每5秒进行一次写检测，如果5秒内write()方法未被调用，则触发一次userEventTrigger()方法
+                        // 实现客户端每5秒向服务端发一次消息
+                        .addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS))
                         .addLast(new CommonDecoder())
                         .addLast(new NettyClientHandler());
             }

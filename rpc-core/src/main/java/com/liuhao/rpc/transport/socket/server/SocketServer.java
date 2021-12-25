@@ -10,7 +10,7 @@ import com.liuhao.rpc.provider.ServiceProviderImpl;
 import com.liuhao.rpc.register.NacosServiceRegistry;
 import com.liuhao.rpc.register.ServiceRegistry;
 import com.liuhao.rpc.serializer.CommonSerializer;
-import com.liuhao.rpc.util.ThreadPoolFactory;
+import com.liuhao.rpc.factory.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +19,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
-
-import static com.liuhao.rpc.transport.RpcClient.DEFAULT_SERIALIZER;
 
 /**
  * 利用线程池创建线程，对多线程情况进行处理

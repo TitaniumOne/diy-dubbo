@@ -1,4 +1,4 @@
-package com.liuhao.rpc.util;
+package com.liuhao.rpc.factory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.NoArgsConstructor;
