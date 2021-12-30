@@ -84,11 +84,13 @@ public class NettyServer extends AbstractRpcServer {
                             .addLast(new NettyServerHandler());
                         }
                     });
-            // 绑定端口，启动Netty，sync()代表阻塞主Server线程，以执行Netty线程，如果不阻塞Netty就直接被下面shutdown了
+            // 绑定端口，启动Netty，bind操作(对应初始化)是异步的，通过sync改为同步等待初始化的完成.
+            // sync()代表阻塞主Server线程，以执行Netty线程，如果不阻塞Netty就直接被下面shutdown了
             ChannelFuture future = serverBootstrap.bind(host, port).sync();
             // 添加注销服务的钩子，服务端关闭时才会执行
             ShutdownHook.getShutdownHook().addClearAllHook();
             // 等确定通道关闭了，关闭future回到主Server线程
+            // 如果缺失这行代码，则main方法所在的线程，即主线程会在执行完bind().sync()方法后，会进入finally 代码块，之前的启动的nettyserver也会随之关闭掉，整个程序都结束了。
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             logger.error("启动服务器时有错误发生", e);
