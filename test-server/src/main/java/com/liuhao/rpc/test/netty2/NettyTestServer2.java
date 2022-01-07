@@ -11,6 +11,6 @@ public class NettyTestServer2 {
     static final int PORT = 9995;
     public static void main(String[] args) {
         NettyServer server = new NettyServer(HOST, PORT, CommonSerializer.PROTOBUF_SERIALIZER);
-        server.start();
+        server.launchServer();
     }
 }

@@ -46,7 +46,7 @@ public class NettyServer extends AbstractRpcServer {
         serviceProvider = new ServiceProviderImpl();
         serializer = CommonSerializer.getByCode(serializerCode);
         //自动注册服务
-        scanServices();
+//        scanServices();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class SocketServer extends AbstractRpcServer {
         //创建线程池
         threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
         //自动注册服务
-        scanServices();
+//        scanServices();
     }
 
     public void start() {

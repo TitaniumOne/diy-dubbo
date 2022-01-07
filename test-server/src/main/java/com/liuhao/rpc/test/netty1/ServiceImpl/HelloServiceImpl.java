@@ -1,4 +1,4 @@
-package com.liuhao.rpc.test.netty1;
+package com.liuhao.rpc.test.netty1.ServiceImpl;
 
 import com.liuhao.rpc.annotation.Service;
 import com.liuhao.rpc.api.HelloObject;

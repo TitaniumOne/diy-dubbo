@@ -3,7 +3,7 @@ package com.liuhao.rpc.test.netty2;
 import com.liuhao.rpc.annotation.Service;
 import com.liuhao.rpc.api.HelloObject;
 import com.liuhao.rpc.api.HelloService;
-import com.liuhao.rpc.test.netty1.HelloServiceImpl;
+import com.liuhao.rpc.test.netty1.ServiceImpl.HelloServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 @Service

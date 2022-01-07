@@ -82,4 +82,9 @@ public abstract class AbstractRpcServer implements RpcServer {
         serviceProvider.addServiceProvider(service, serviceName);
         serviceRegistry.register(serviceName, new InetSocketAddress(host, port));
     }
+
+    public final void launchServer() {
+        scanServices();
+        start();
+    }
 }
